@@ -1,0 +1,193 @@
+﻿<Window x:Class="_15puzzleWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:_15puzzleWPF"
+        mc:Ignorable="d"
+        Title="MainWindow" MaxWidth="800" MaxHeight="800" MinWidth="800" MinHeight="800" Width="800" Height="800">
+    <StackPanel Orientation="Vertical">
+
+        <StackPanel.Background>
+            <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                <GradientStop Color="Black" Offset="1"/>
+                <GradientStop Color="White" Offset="1"/>
+                <GradientStop Color="#FF0E152B" Offset="0.5"/>
+                <GradientStop Color="#FF0D1A23" Offset="0.1"/>
+            </LinearGradientBrush>
+        </StackPanel.Background>
+
+        <StackPanel Orientation="Horizontal" Height="580" VerticalAlignment="Bottom">
+            <StackPanel.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="0"/>
+                </TransformGroup>
+            </StackPanel.RenderTransform>
+
+
+
+            <Canvas x:Name="TileCanvas"
+                    Width="512"
+                    Height="512" 
+                    Background="#FF16202B" 
+                    Margin="15,0"/>
+
+            <StackPanel Height="512 " Margin="0" Width="248">
+
+                <Button x:Name="ShuffleButton"
+                        Click="ShuffleButton_Clicked" 
+                        Height="50" 
+                        Margin="0,0,15,0"
+                        FontFamily="Yu Gothic" 
+                        Content="Shuffle"
+                        FontSize="20" 
+                        FontWeight="Bold"
+                        Background="#FF1F2F40">
+                    <Button.BorderBrush>
+                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}"/>
+                    </Button.BorderBrush>
+                    <Button.Foreground>
+                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+                    </Button.Foreground>
+                </Button>
+
+                <Button x:Name="SolveButton" 
+                        Click="SolveButton_Clicked"
+                        Height="50" 
+                        Margin="0,30,15,0" 
+                        FontFamily="Yu Gothic"
+                        Content="Solve"
+                        FontSize="20"
+                        FontWeight="Bold"
+                        Background="#FF1F2F40">
+                    <Button.BorderBrush>
+                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}"/>
+                    </Button.BorderBrush>
+                    <Button.Foreground>
+                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+                    </Button.Foreground>
+
+                </Button>
+
+                <Button x:Name="AnimateButton"
+                        Click="AnimateButton_Clicked"
+                        Height="50" 
+                        Margin="0,30,15,0"  
+                        FontFamily="Yu Gothic" 
+                        Content="Animate solution" 
+                        FontSize="20" 
+                        FontWeight="Bold" 
+                        Background="#FF1F2F40">
+                    <Button.BorderBrush>
+                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}"/>
+                    </Button.BorderBrush>
+                    <Button.Foreground>
+                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+                    </Button.Foreground>
+
+                </Button>
+
+                <TextBox x:Name="DistanceText" 
+                         Margin="0,20,15,0" 
+                         Height="50" 
+                         Background="{x:Null}" 
+                         SelectionBrush="#FF1B3447" 
+                         FontFamily="Yu Gothic" 
+                         Text="Manhattan distance: " 
+                         FontSize="17" 
+                         FontWeight="Bold" 
+                         Width="233" 
+                         BorderBrush="{x:Null}" 
+                         TextWrapping="Wrap" 
+                         HorizontalContentAlignment="Left" 
+                         VerticalContentAlignment="Center"
+                         IsReadOnly="True">
+                    <TextBox.Foreground>
+                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+                    </TextBox.Foreground>
+                </TextBox>
+
+                <TextBox x:Name="SearchDepthText" 
+                         Margin="0,20,15,0" 
+                         Height="50" 
+                         Background="{x:Null}" 
+                         SelectionBrush="#FF1B3447" 
+                         FontFamily="Yu Gothic" 
+                         Text="Search depth: " 
+                         FontSize="17" 
+                         FontWeight="Bold" 
+                         Width="233" 
+                         BorderBrush="{x:Null}" 
+                         TextWrapping="Wrap" 
+                         HorizontalContentAlignment="Left" 
+                         VerticalContentAlignment="Center"
+                         IsReadOnly="True">
+                    <TextBox.Foreground>
+                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+                    </TextBox.Foreground>
+                </TextBox>
+
+                <TextBox x:Name="TimeText" 
+                         Margin="0,20,15,0" 
+                         Height="55" 
+                         Background="{x:Null}" 
+                         SelectionBrush="#FF1B3447" 
+                         FontFamily="Yu Gothic" 
+                         Text="Elapsed time:                      " 
+                         FontSize="17" 
+                         FontWeight="Bold" 
+                         Width="233" 
+                         BorderBrush="{x:Null}" 
+                         TextWrapping="Wrap" 
+                         HorizontalContentAlignment="Left" 
+                         VerticalContentAlignment="Stretch"
+                         IsReadOnly="True">
+                    <TextBox.Foreground>
+                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+                    </TextBox.Foreground>
+                </TextBox>
+
+                <TextBox x:Name="NodesText" 
+                         Margin="0,20,15,0" 
+                         Height="55" 
+                         Background="{x:Null}" 
+                         SelectionBrush="#FF1B3447" 
+                         FontFamily="Yu Gothic" 
+                         Text="Generated nodes:               " 
+                         FontSize="17" 
+                         FontWeight="Bold" 
+                         BorderBrush="{x:Null}" 
+                         TextWrapping="Wrap" 
+                         HorizontalContentAlignment="Left" 
+                         VerticalContentAlignment="Stretch"
+                         IsReadOnly="True">
+                    <TextBox.Foreground>
+                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+                    </TextBox.Foreground>
+                </TextBox>
+
+            </StackPanel>
+        </StackPanel>
+
+        <RichTextBox x:Name="ConsoleBox" 
+                     IsReadOnly="True"
+                     BorderBrush="#FF2A3745"
+                     Background="#FF16202B" 
+                     FontFamily="Yu Gothic"
+                     Margin="15,0" 
+                     Height="170" 
+                     VerticalAlignment="Bottom" 
+                     VerticalScrollBarVisibility="Visible">
+            <RichTextBox.CaretBrush>
+                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.HotTrackColorKey}}"/>
+            </RichTextBox.CaretBrush>
+            <RichTextBox.Foreground>
+                <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
+            </RichTextBox.Foreground>
+        </RichTextBox>
+
+    </StackPanel>
+</Window>
