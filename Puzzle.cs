@@ -14,11 +14,11 @@ namespace _15puzzleWPF
          * dir 3 = down
          */
 
-        private static int[,] newidx = new int[16, 4] {{-1,1,-1,7},{0,2,-1,6},{1,3,-1,5},{2,-1,-1,4},
-                                                {-1,5,0,8},{4,6,1,9},{5,7,2,10},{6,-1,3,11},
-                                                {-1,9,4,12},{8,10,5,13},{9,11,6,14},{10,-1,7,15},
-                                                {-1,13,8,-1},{12,14,9,-1},{13,15,10,-1},{14,-1,11,-1}
-                                                };
+        private static int[,] newidx = new int[16, 4] {{-1,1,-1,4}, {0,2,-1,5},  {1,3,-1,6},   {2,-1,-1,7},
+                                                       {-1,5,0,8},  {4,6,1,9},   {5,7,2,10},   {6,-1,3,11},
+                                                       {-1,9,4,12}, {8,10,5,13}, {9,11,6,14},  {10,-1,7,15},
+                                                       {-1,13,8,-1},{12,14,9,-1},{13,15,10,-1},{14,-1,11,-1}
+                                                       };
 
         private static byte[] boostrofedon = new byte[16] {0, 1, 2, 3, 7, 6, 5, 4, 8, 9, 10, 11, 15, 14, 13, 12};
         private static byte[] final = new byte[16] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0};
@@ -65,20 +65,17 @@ namespace _15puzzleWPF
             */
 
             //training set
-            pz = new int[16] { 1, 2, 3, 4, 5, 6, 8, 0, 9, 10, 7, 11, 13, 14, 15, 12 };
+            pz = new int[16] { 1,2,3,4,5,6,7,8,9,10,11,12,13,0,14,15 };
+            //pz = new int[16] { 2,3,4,8,1,5,0,6,9,10,7,12,13,14,11,15 };
+            //pz = new int[16] { 5,1,2,4,9,3,8,12,6,7,14,11,13,10,15,0 };
+            //pz = new int[16] { 2,1,13,11,0,7,9,5,15,3,6,4,8,14,10,12 };
         }
 
         private void buildManhattan()
         {
             for (int i = 0; i < 16; ++i)
-            {
-                int ik = boostrofedon[i];
                 for (int j = 0; j < 16; ++j)
-                {
-                    int jk = boostrofedon[j];
-                    manhattanDistance[i, j] = (byte) (Math.Abs(ik / 4 - jk / 4) + Math.Abs(ik % 4 - jk % 4));
-                }
-            }
+                    manhattanDistance[i, j] = (byte) (Math.Abs(i / 4 - j / 4) + Math.Abs(i % 4 - j % 4));
         }
 
         public int this[byte index]
@@ -121,13 +118,13 @@ namespace _15puzzleWPF
 
         private void printSolution(ref int[] puz)
         {
-            StringBuilder sol = new StringBuilder("");
-            sol.Append("Solution : ");
+            StringBuilder sol = new StringBuilder("Solution[" + searchLength + "] : | ");
+            int[] pztmp = new int[16];
+            Array.Copy(pz, pztmp, 16);
             for (int i = searchLength-1; i>=0; --i)
             {
-                sol.Append(solution[i]+1);
-                if (i != 0)
-                    sol.Append(" | ");
+                sol.Append(pztmp[solution[i]] + " | ");
+                swap<int>(ref pztmp[solution[i]], ref pztmp[zeroPos(ref pztmp)]);
             }
             sol.Append("\r");
             print(sol.ToString());
@@ -172,6 +169,7 @@ namespace _15puzzleWPF
             do
             {
                 searchManhattan(node, zeroPos(ref node), -1, searchLength);
+                ((MainWindow)parent).SearchDepthText.Text = MainWindow.SEARCH_DEPTH_STRING + searchLength;
                 searchLength += 2;
             } while (solutionFound==0 && abortIDA==0);
 
@@ -186,7 +184,6 @@ namespace _15puzzleWPF
             }
 
             //print((zeropos+1) + " " + ldir + " " + searchLength + " " + nextSearch + " " + nodecount + "\r");
-            //print(searchLength + "\r");
             //printNode(ref node);
 
             if (nextSearch == 0)
@@ -215,7 +212,7 @@ namespace _15puzzleWPF
             }
             else
             {
-                for (int dir = 0; dir < 4; ++dir)
+                for (int dir = 3; dir >= 0; --dir)
                 {
                     if (ldir == -1 || (dir + ldir) % 4 != 1 || solutionFound != 1)
                     {
@@ -225,14 +222,13 @@ namespace _15puzzleWPF
 
                         swap<int>(ref node[zeropos], ref node[newZeroPos]);
 
-                        int manDist = 0;
+                        byte manDist = 0;
                         for (byte i = 0; i < 16; ++i)
                         {
                             if (i != newZeroPos)
                                 manDist += manhattanDistance[node[i]-1, i];
                         }
-                        ((MainWindow)parent).DistanceText.Text = MainWindow.MANHATTAN_DISTANCE_STRING + manDist;
-                        DoEvents();
+                        
 
                         //printNode(ref node);
                         //print("m = " + manDist + " | n = " + nextSearch + "\r");
@@ -240,6 +236,11 @@ namespace _15puzzleWPF
                         if (manDist < nextSearch)
                         {
                             nodecount++;
+                            if (nodecount % 100000 == 0)
+                            {
+                                ((MainWindow)parent).DistanceText.Text = MainWindow.MANHATTAN_DISTANCE_STRING + manDist;
+                                DoEvents();
+                            }
                             solution[nextSearch] = zeropos;
                             searchManhattan(node, newZeroPos, dir, nextSearch - 1);
                         }

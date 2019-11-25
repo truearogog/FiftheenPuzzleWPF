@@ -138,8 +138,8 @@ namespace _15puzzleWPF
             if (l == -1)
             {
                 //Unable to solve
-                SearchDepthText.Text = SEARCH_DEPTH_STRING + "\n-";
-                NodesText.Text = GENERATED_NODES_STRING + "\n-";
+                SearchDepthText.Text = SEARCH_DEPTH_STRING + "\r-";
+                NodesText.Text = GENERATED_NODES_STRING + "\r-";
                 Println("Unsolvable");
             }
             else if (puz.abortIDA == 0)
