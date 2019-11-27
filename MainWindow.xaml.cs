@@ -17,6 +17,7 @@ namespace _15puzzleWPF
         public const string GENERATED_NODES_STRING = "Generated nodes:";
         public const string TIME_STRING = "Elapsed time:";
         public const byte CONSOLE_LENGTH = 136;
+        public const byte AnimationSpeed = 5;
 
         private Image[] tiles = new Image[15];
         private Puzzle puz;
@@ -60,32 +61,6 @@ namespace _15puzzleWPF
                     continue;
                 Canvas.SetLeft(tiles[puz[i]-1], (TILE_SIZE + TILE_OFFSET) * (i % 4) + TILE_OFFSET/2);
                 Canvas.SetTop(tiles[puz[i]-1],  (TILE_SIZE + TILE_OFFSET) * (i / 4) + TILE_OFFSET/2);
-            }
-        }
-
-        public void MoveTile(byte num, int dir)
-        {
-            /* dir 0 = left
-             * dir 1 = right
-             * dir 2 = up
-             * dir 3 = down
-             */
-            switch (dir)
-            {
-                case 0:
-                    Canvas.SetLeft(tiles[num], Canvas.GetLeft(tiles[num]) - TILE_SIZE / 8);
-                    break;
-                case 1:
-                    Canvas.SetLeft(tiles[num], Canvas.GetLeft(tiles[num]) + TILE_SIZE / 8);
-                    break;
-                case 2:
-                    Canvas.SetTop(tiles[num], Canvas.GetTop(tiles[num]) - TILE_SIZE / 8);
-                    break;
-                case 3:
-                    Canvas.SetTop(tiles[num], Canvas.GetTop(tiles[num]) + TILE_SIZE / 8);
-                    break;
-                default:
-                    break;
             }
         }
 
@@ -163,12 +138,55 @@ namespace _15puzzleWPF
             LoadButton.IsEnabled = true;
         }
 
+        public void MoveTile(int num, int dir)
+        {
+            /* dir 0 = left
+             * dir 1 = right
+             * dir 2 = up
+             * dir 3 = down
+             */
+            switch (dir)
+            {
+                case 0:
+                    Canvas.SetLeft(tiles[num], Canvas.GetLeft(tiles[num]) + AnimationSpeed);// TILE_SIZE / 8);
+                    break;
+                case 1:
+                    Canvas.SetLeft(tiles[num], Canvas.GetLeft(tiles[num]) - AnimationSpeed);//TILE_SIZE / 8);
+                    break;
+                case 2:
+                    Canvas.SetTop(tiles[num], Canvas.GetTop(tiles[num]) + AnimationSpeed); //TILE_SIZE / 8);
+                    break;
+                case 3:
+                    Canvas.SetTop(tiles[num], Canvas.GetTop(tiles[num]) - AnimationSpeed); //TILE_SIZE / 8);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         private void AnimateButton_Clicked(object sender, RoutedEventArgs e)
         {
-            
             for (int i = puz.searchLength - 1; i >= 0; --i)
             {
+                for (int dir = 0; dir < 4; ++dir)
+                {
+                    int zeropos = puz.zeroPos();
+                    int newZeroPos = Puzzle.newidx[zeropos, dir];
+                    if (newZeroPos == -1)
+                        continue;
 
+                    if (puz[newZeroPos] == puz[puz.solution[i]])
+                    {
+                        puz.swapPositions(newZeroPos, zeropos);
+                        for (int x = 0; x < 14; ++x)
+                        {
+                            MoveTile(puz[zeropos]-1, dir);
+                            DoEvents();
+                            Thread.Sleep(20);
+                        }
+                        break;
+                    }
+                }
             }
 
             /*

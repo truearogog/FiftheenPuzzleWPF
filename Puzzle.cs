@@ -15,7 +15,7 @@ namespace _15puzzleWPF
          * dir 3 = down
          */
 
-        private static int[,] newidx = new int[16, 4] {{-1,1,-1,4},  {0,2,-1,5},   {1,3,-1,6},    {2,-1,-1,7},
+        public static int[,] newidx = new int[16, 4] {{-1,1,-1,4},  {0,2,-1,5},   {1,3,-1,6},    {2,-1,-1,7},
                                                        {-1,5,0,8},   {4,6,1,9},    {5,7,2,10},    {6,-1,3,11},
                                                        {-1,9,4,12},  {8,10,5,13},  {9,11,6,14},   {10,-1,7,15},
                                                        {-1,13,8,-1}, {12,14,9,-1}, {13,15,10,-1}, {14,-1,11,-1}};
@@ -58,7 +58,7 @@ namespace _15puzzleWPF
                     manhattanDistance[i, j] = (byte) (Math.Abs(i / 4 - j / 4) + Math.Abs(i % 4 - j % 4));
         }
 
-        public int this[byte index]
+        public int this[int index]
         {
             get { return pz[index]; }
         }
@@ -68,6 +68,13 @@ namespace _15puzzleWPF
             T tmp = a;
             a = b;
             b = tmp;
+        }
+
+        public void swapPositions(int pos1, int pos2)
+        {
+            int tmp = pz[pos1];
+            pz[pos1] = pz[pos2];
+            pz[pos2] = tmp;
         }
 
         public void loadFromFile()
@@ -276,17 +283,21 @@ namespace _15puzzleWPF
             return -1;
         }
 
-        private int zeroPosBust(ref int[] puz)
+        public int zeroPos()
         {
-            int[] tmp = new int[16];
-            for (int i = 0; i < 16; ++i)
-            {
-                tmp[i] = puz[boostrofedon[i]];
-            }
-
             for (byte i = 0; i < 16; ++i)
             {
-                if (tmp[i] == 0)
+                if (pz[i] == 0)
+                    return i;
+            }
+            return -1;
+        }
+
+        static public int zeroPos(ref Puzzle puz)
+        {
+            for (byte i = 0; i < 16; ++i)
+            {
+                if (puz[i] == 0)
                     return i;
             }
             return -1;
