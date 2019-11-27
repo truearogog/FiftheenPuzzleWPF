@@ -1,32 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace _15puzzleWPF
 {
     public partial class MainWindow : Window
     {
-        public const byte TILE_SIZE = 128;
-        public const byte CONSOLE_LENGTH = 138;
-        public const byte TILE_OFFSET = 4;
-        public const string SEARCH_DEPTH_STRING = "Search depth:";
+        public const double TILE_SIZE = 65;
+        public const double TILE_OFFSET = 5;
+        public const string SEARCH_DEPTH_STRING = "Search depth: ";
         public const string MANHATTAN_DISTANCE_STRING = "Manhattan distance: ";
         public const string GENERATED_NODES_STRING = "Generated nodes:";
         public const string TIME_STRING = "Elapsed time:";
+        public const byte CONSOLE_LENGTH = 136;
 
         private Image[] tiles = new Image[15];
         private Puzzle puz;
+
+        private delegate void EmptyDelegate();
+
+        int dir;
 
         public MainWindow()
         {
@@ -43,11 +40,16 @@ namespace _15puzzleWPF
                 temp.EndInit();
                 tiles[i] = new Image();
                 tiles[i].Source = temp;
-                tiles[i].Width = temp.PixelWidth - TILE_OFFSET*2;
-                tiles[i].Height = temp.PixelHeight - TILE_OFFSET*2;
+                tiles[i].Width = temp.PixelWidth-63;
+                tiles[i].Height = temp.PixelWidth-63;
                 TileCanvas.Children.Add(tiles[i]);
             }
             ChangeTilesPositions();
+        }
+
+        public void DoEvents()
+        {
+            Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new EmptyDelegate(delegate { }));
         }
 
         public void ChangeTilesPositions()
@@ -56,8 +58,8 @@ namespace _15puzzleWPF
             {
                 if (puz[i] == 0)
                     continue;
-                Canvas.SetLeft(tiles[puz[i]-1], TILE_SIZE * (i % 4) + TILE_OFFSET);
-                Canvas.SetTop(tiles[puz[i]-1], TILE_SIZE * (i / 4) + TILE_OFFSET);
+                Canvas.SetLeft(tiles[puz[i]-1], (TILE_SIZE + TILE_OFFSET) * (i % 4) + TILE_OFFSET/2);
+                Canvas.SetTop(tiles[puz[i]-1],  (TILE_SIZE + TILE_OFFSET) * (i / 4) + TILE_OFFSET/2);
             }
         }
 
@@ -122,24 +124,26 @@ namespace _15puzzleWPF
             }
             else
             {
-                ConsoleBox.Document.Blocks.Clear();
                 Println(Dupestring(CONSOLE_LENGTH * 2, "-").ToString());
             }
 
             SolveButton.Content = "Abort";
+            NodesText.Text = GENERATED_NODES_STRING + "\r-";
+            TimeText.Text = TIME_STRING + "\r-ms";
             AnimateButton.IsEnabled = false;
             ShuffleButton.IsEnabled = false;
+            LoadButton.IsEnabled = false;
 
             //get system time
             long startTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
+            
             int l = puz.IDAsearch();
 
             if (l == -1)
             {
                 //Unable to solve
                 SearchDepthText.Text = SEARCH_DEPTH_STRING + "\r-";
-                NodesText.Text = GENERATED_NODES_STRING + "\r-";
                 Println("Unsolvable");
             }
             else if (puz.abortIDA == 0)
@@ -147,22 +151,40 @@ namespace _15puzzleWPF
                 //Solved
                 //Reset time label
                 long endTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-                TimeText.Text = TIME_STRING + "\r" + (endTime-startTime).ToString() + " ms";
+                TimeText.Text = TIME_STRING + "\r" + (endTime - startTime).ToString() + " ms";
 
                 //reset nodes label
                 NodesText.Text = GENERATED_NODES_STRING + "\r" + puz.nodecount;
                 SearchDepthText.Text = SEARCH_DEPTH_STRING + "\r" + l;
             }
-
-            Println("");
             SolveButton.Content = "Solve";
             ShuffleButton.IsEnabled = true;
-            AnimateButton.IsEnabled = true;  
+            AnimateButton.IsEnabled = true;
+            LoadButton.IsEnabled = true;
         }
 
         private void AnimateButton_Clicked(object sender, RoutedEventArgs e)
         {
+            
+            for (int i = puz.searchLength - 1; i >= 0; --i)
+            {
 
+            }
+
+            /*
+            for (int i = searchLength - 1; i >= 0; --i)
+            {
+                sol.Append(pztmp[solution[i]]);
+                swap<int>(ref pztmp[solution[i]], ref pztmp[zeroPos(ref pztmp)]);
+            }
+            */
+        }
+
+        private void LoadButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            puz.loadFromFile();
+            ChangeTilesPositions();
+            Println("Loaded");
         }
     } 
 }
