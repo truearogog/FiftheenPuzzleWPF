@@ -32,7 +32,7 @@ namespace _15puzzleWPF
         {
             InitializeComponent();
 
-            puz = new Puzzle(Puzzle.START_TYPE.RANDOM, this);
+            puz = new Puzzle(Puzzle.START_TYPE.NORMALIZED, this);
 
             //generate 15 puzzle images from source
             for (byte i = 0; i < 15; ++i)

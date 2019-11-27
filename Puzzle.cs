@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using System.Windows.Threading;
 
@@ -40,19 +41,6 @@ namespace _15puzzleWPF
             buildManhattan();
 
             /*
-            //PUZZLE GENERATION TYPES
-            switch (type)
-            {
-                case START_TYPE.NORMALIZED:
-                    startPos();
-                    break;
-                case START_TYPE.RANDOM:
-                    randomize();
-                    break;
-            }
-            */
-
-            /*
             //PRINT MANHATTAN MATRIX 
             for (byte i = 0; i < 16; ++i)
             {
@@ -64,11 +52,25 @@ namespace _15puzzleWPF
             }
             */
 
-            //training set
-            pz = new int[16] { 1,2,3,4,5,6,7,8,9,10,11,12,13,0,14,15 };
-            //pz = new int[16] { 2,3,4,8,1,5,0,6,9,10,7,12,13,14,11,15 };
-            //pz = new int[16] { 5,1,2,4,9,3,8,12,6,7,14,11,13,10,15,0 };
-            //pz = new int[16] { 2,1,13,11,0,7,9,5,15,3,6,4,8,14,10,12 };
+            //load puzzle from text file
+            if (File.Exists("puzzle.txt"))
+            {
+                string txt = File.ReadAllText("puzzle.txt");
+                pz = Array.ConvertAll<string, int>(txt.Split(','), x=>int.Parse(x));
+            }
+            else
+            {
+                //PUZZLE GENERATION TYPES
+                switch (type)
+                {
+                    case START_TYPE.NORMALIZED:
+                        startPos();
+                        break;
+                    case START_TYPE.RANDOM:
+                        randomize();
+                        break;
+                }
+            }
         }
 
         private void buildManhattan()
@@ -208,11 +210,12 @@ namespace _15puzzleWPF
                         return; 
                     }
                     printSolution(ref pz);
+                    DoEvents();
                 }
             }
             else
             {
-                for (int dir = 3; dir >= 0; --dir)
+                for (int dir = 0; dir < 4; ++dir)
                 {
                     if (ldir == -1 || (dir + ldir) % 4 != 1 || solutionFound != 1)
                     {
@@ -228,7 +231,6 @@ namespace _15puzzleWPF
                             if (i != newZeroPos)
                                 manDist += manhattanDistance[node[i]-1, i];
                         }
-                        
 
                         //printNode(ref node);
                         //print("m = " + manDist + " | n = " + nextSearch + "\r");
@@ -236,7 +238,7 @@ namespace _15puzzleWPF
                         if (manDist < nextSearch)
                         {
                             nodecount++;
-                            if (nodecount % 100000 == 0)
+                            if (nodecount % 1000000 == 0)
                             {
                                 ((MainWindow)parent).DistanceText.Text = MainWindow.MANHATTAN_DISTANCE_STRING + manDist;
                                 DoEvents();
