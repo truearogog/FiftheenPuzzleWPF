@@ -28,12 +28,12 @@
 
             <StackPanel Orientation="Vertical" Margin="0">
                 <Canvas x:Name="TileCanvas"
-                    Width="280"
-                    Height="280" 
-                    Background="#FF16202B" 
-                    Margin="20,20,20,0" VerticalAlignment="Top"/>
-
-                
+                        Width="280"
+                        Height="280" 
+                        Background="#FF16202B" 
+                        Margin="20,20,20,0" 
+                        VerticalAlignment="Top" 
+                        MouseLeftButtonDown="MoveTilePressed"/>
             </StackPanel>
 
             <StackPanel Margin="0,20,15,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
@@ -117,13 +117,13 @@
                             VerticalAlignment="Top" Height="40">
 
                     <Button x:Name="LoadButton"
-                        Click="LoadButton_Clicked" 
-                        Width="100"
-                        Margin="0"
-                        FontFamily="Yu Gothic" 
-                        Content="Load from file" 
-                        FontWeight="Bold"
-                        Background="#FF1F2F40" FontSize="14">
+                            Click="LoadButton_Clicked" 
+                            Width="100"
+                            Margin="0"
+                            FontFamily="Yu Gothic" 
+                            Content="Load from file" 
+                            FontWeight="Bold"
+                            Background="#FF1F2F40" FontSize="14">
                         <Button.BorderBrush>
                             <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}"/>
                         </Button.BorderBrush>
@@ -133,14 +133,14 @@
                     </Button>
                     
                     <Button x:Name="ShuffleButton"
-                        Click="ShuffleButton_Clicked" 
-                        Width="100"
-                        Margin="15,0,0,0"
-                        FontFamily="Yu Gothic" 
-                        Content="Shuffle"
-                        FontSize="14" 
-                        FontWeight="Bold"
-                        Background="#FF1F2F40">
+                            Click="ShuffleButton_Clicked" 
+                            Width="100"
+                            Margin="15,0,0,0"
+                            FontFamily="Yu Gothic" 
+                            Content="Shuffle"
+                            FontSize="14" 
+                            FontWeight="Bold"
+                            Background="#FF1F2F40">
                         <Button.BorderBrush>
                             <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}"/>
                         </Button.BorderBrush>
@@ -150,14 +150,14 @@
                     </Button>
 
                     <Button x:Name="SolveButton" 
-                        Click="SolveButton_Clicked" 
-                        Width="100"
-                        Margin="15,0,0,0" 
-                        FontFamily="Yu Gothic"
-                        Content="Solve"
-                        FontSize="14"
-                        FontWeight="Bold"
-                        Background="#FF1F2F40">
+                            Click="SolveButton_Clicked" 
+                            Width="100"
+                            Margin="15,0,0,0" 
+                            FontFamily="Yu Gothic"
+                            Content="Solve"
+                            FontSize="14"
+                            FontWeight="Bold"
+                            Background="#FF1F2F40">
                         <Button.BorderBrush>
                             <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}"/>
                         </Button.BorderBrush>
@@ -167,13 +167,14 @@
                     </Button>
 
                     <Button x:Name="AnimateButton"
-                        Click="AnimateButton_Clicked" 
-                        Margin="15,0,0,0"  
-                        FontFamily="Yu Gothic" 
-                        Content="Animate" 
-                        FontSize="14" 
-                        FontWeight="Bold" 
-                        Background="#FF1F2F40" Width="100">
+                            Click="AnimateButton_Clicked" 
+                            Width="100"
+                            Margin="15,0,0,0"  
+                            FontFamily="Yu Gothic" 
+                            Content="Animate" 
+                            FontSize="14" 
+                            FontWeight="Bold" 
+                            Background="#FF1F2F40">
                         <Button.BorderBrush>
                             <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}"/>
                         </Button.BorderBrush>
@@ -192,7 +193,8 @@
                      Background="#FF16202B" 
                      FontFamily="Yu Gothic"
                      Margin="20,0,20,20" 
-                     VerticalScrollBarVisibility="Visible" Height="180">
+                     VerticalScrollBarVisibility="Visible" 
+                     Height="180">
             <RichTextBox.CaretBrush>
                 <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.HotTrackColorKey}}"/>
             </RichTextBox.CaretBrush>

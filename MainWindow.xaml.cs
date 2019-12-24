@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
@@ -17,14 +18,15 @@ namespace _15puzzleWPF
         public const string GENERATED_NODES_STRING = "Generated nodes:";
         public const string TIME_STRING = "Elapsed time:";
         public const byte CONSOLE_LENGTH = 136;
-        public const byte AnimationSpeed = 5;
+        public const byte AnimationSpeed = 7;
+        public bool movingTile = false;
+
+        public static byte[,] matrixToPuz = new byte[4,4]{ { 0,1,2,3},{ 4,5,6,7},{ 8,9,10,11},{ 12,13,14,15} }; 
 
         private Image[] tiles = new Image[15];
         private Puzzle puz;
 
         private delegate void EmptyDelegate();
-
-        int dir;
 
         public MainWindow()
         {
@@ -99,7 +101,7 @@ namespace _15puzzleWPF
             }
             else
             {
-                Println(Dupestring(CONSOLE_LENGTH * 2, "-").ToString());
+                Println(Dupestring(CONSOLE_LENGTH, "-").ToString());
             }
 
             SolveButton.Content = "Abort";
@@ -108,10 +110,10 @@ namespace _15puzzleWPF
             AnimateButton.IsEnabled = false;
             ShuffleButton.IsEnabled = false;
             LoadButton.IsEnabled = false;
+            //ConsoleBox.Document.Blocks.Clear();
 
             //get system time
             long startTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-
             
             int l = puz.IDAsearch();
 
@@ -138,7 +140,7 @@ namespace _15puzzleWPF
             LoadButton.IsEnabled = true;
         }
 
-        public void MoveTile(int num, int dir)
+        public void MoveTile(int num, int dir, int am)
         {
             /* dir 0 = left
              * dir 1 = right
@@ -148,54 +150,50 @@ namespace _15puzzleWPF
             switch (dir)
             {
                 case 0:
-                    Canvas.SetLeft(tiles[num], Canvas.GetLeft(tiles[num]) + AnimationSpeed);// TILE_SIZE / 8);
+                    Canvas.SetLeft(tiles[num], Canvas.GetLeft(tiles[num]) - AnimationSpeed*am);
                     break;
                 case 1:
-                    Canvas.SetLeft(tiles[num], Canvas.GetLeft(tiles[num]) - AnimationSpeed);//TILE_SIZE / 8);
+                    Canvas.SetLeft(tiles[num], Canvas.GetLeft(tiles[num]) + AnimationSpeed*am);
                     break;
                 case 2:
-                    Canvas.SetTop(tiles[num], Canvas.GetTop(tiles[num]) + AnimationSpeed); //TILE_SIZE / 8);
+                    Canvas.SetTop(tiles[num], Canvas.GetTop(tiles[num]) - AnimationSpeed*am);
                     break;
                 case 3:
-                    Canvas.SetTop(tiles[num], Canvas.GetTop(tiles[num]) - AnimationSpeed); //TILE_SIZE / 8);
+                    Canvas.SetTop(tiles[num], Canvas.GetTop(tiles[num]) + AnimationSpeed*am);
                     break;
                 default:
                     break;
             }
         }
 
+        private void AnimateTile(int num, int dir,int am)
+        {
+            int to = (int)Math.Floor((TILE_SIZE + TILE_OFFSET) / AnimationSpeed);
+            for (int x = 0; x < to; ++x)
+            {
+                MoveTile(num-1, dir, am);
+                DoEvents();
+                Thread.Sleep(20);
+            }
+        }
+
         private void AnimateButton_Clicked(object sender, RoutedEventArgs e)
         {
-            for (int i = puz.searchLength - 1; i >= 0; --i)
+            for (int i = puz.searchLength - 2; i >= 0; --i)
             {
+                int zeroPos = puz.zeroPos();
                 for (int dir = 0; dir < 4; ++dir)
                 {
-                    int zeropos = puz.zeroPos();
-                    int newZeroPos = Puzzle.newidx[zeropos, dir];
+                    int newZeroPos = Puzzle.newidx[zeroPos, dir];
                     if (newZeroPos == -1)
                         continue;
-
-                    if (puz[newZeroPos] == puz[puz.solution[i]])
+                    if (newZeroPos == puz.solution[i])
                     {
-                        puz.swapPositions(newZeroPos, zeropos);
-                        for (int x = 0; x < 14; ++x)
-                        {
-                            MoveTile(puz[zeropos]-1, dir);
-                            DoEvents();
-                            Thread.Sleep(20);
-                        }
-                        break;
+                        puz.swapPositions(zeroPos,newZeroPos);
+                        AnimateTile(puz[zeroPos], dir, - 1);
                     }
                 }
             }
-
-            /*
-            for (int i = searchLength - 1; i >= 0; --i)
-            {
-                sol.Append(pztmp[solution[i]]);
-                swap<int>(ref pztmp[solution[i]], ref pztmp[zeroPos(ref pztmp)]);
-            }
-            */
         }
 
         private void LoadButton_Clicked(object sender, RoutedEventArgs e)
@@ -203,6 +201,28 @@ namespace _15puzzleWPF
             puz.loadFromFile();
             ChangeTilesPositions();
             Println("Loaded");
+        }
+
+        private void MoveTilePressed(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (movingTile)
+                return;
+            movingTile = true;
+            Point mpos = Mouse.GetPosition(TileCanvas);
+            byte x = (byte)Math.Floor(mpos.X / (TILE_SIZE+TILE_OFFSET));
+            byte y = (byte)Math.Floor(mpos.Y / (TILE_SIZE+TILE_OFFSET));
+            byte chosenTile = matrixToPuz[y, x];
+            for (int dir = 0; dir < 4; ++dir)
+            {
+                int zeroPos = Puzzle.newidx[chosenTile, dir];
+                if ((zeroPos == -1) || (puz[zeroPos] != 0))
+                    continue;
+                
+                puz.swapPositions(zeroPos, chosenTile);
+                AnimateTile(puz[zeroPos], dir, 1);
+                break;
+            }
+            movingTile = false;
         }
     } 
 }

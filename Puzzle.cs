@@ -15,6 +15,7 @@ namespace _15puzzleWPF
          * dir 3 = down
          */
 
+        //new zero positions for basic order
         public static int[,] newidx = new int[16, 4] {{-1,1,-1,4},  {0,2,-1,5},   {1,3,-1,6},    {2,-1,-1,7},
                                                        {-1,5,0,8},   {4,6,1,9},    {5,7,2,10},    {6,-1,3,11},
                                                        {-1,9,4,12},  {8,10,5,13},  {9,11,6,14},   {10,-1,7,15},
@@ -33,11 +34,21 @@ namespace _15puzzleWPF
         private MainWindow winParent;
 
         public static byte[,] manhattanDistance = new byte[16, 16];
-
         public Puzzle(START_TYPE type, MainWindow parent)
         {
             this.winParent = parent;
             buildManhattan();
+
+            /*
+            for (int x = 0; x<16; ++x)
+            {
+                for (int y = 0; y<16; ++y)
+                {
+                    print(manhattanDistance[x,y] + " ");
+                }
+                print("\r");
+            }
+            */
 
             //PUZZLE GENERATION TYPES
             switch (type)
@@ -54,8 +65,15 @@ namespace _15puzzleWPF
         private void buildManhattan()
         {
             for (int i = 0; i < 16; ++i)
+            {
+                //int it = boostrofedon[i];
                 for (int j = 0; j < 16; ++j)
-                    manhattanDistance[i, j] = (byte) (Math.Abs(i / 4 - j / 4) + Math.Abs(i % 4 - j % 4));
+                {
+                    //int jt = boostrofedon[j];
+                    //manhattanDistance[i, j] = (byte)(Math.Abs(it / 4 - jt / 4) + Math.Abs(it % 4 - jt % 4));
+                    manhattanDistance[i, j] = (byte)(Math.Abs(i / 4 - j / 4) + Math.Abs(i % 4 - j % 4));
+                }
+            }
         }
 
         public int this[int index]
@@ -82,10 +100,12 @@ namespace _15puzzleWPF
             try
             {
                 string txt = File.ReadAllText("puzzle.txt");
-                pz = Array.ConvertAll<string, int>(txt.Split(','), x => int.Parse(x));
+                pz = Array.ConvertAll<string, int>(txt.Split(' '), x => int.Parse(x));
             }
-            catch(IOException e){ }
+            catch(IOException e){
+                print(e.StackTrace + "\r");
             }
+        }
 
         public void randomize()
         {
@@ -136,37 +156,34 @@ namespace _15puzzleWPF
             for (int i = 0; i < 85; ++i)
                 solution[i] = 0;
 
-            int[] node = new int[16];
+            int[] node = new int[16];            
+            
             Array.Copy(pz, node, 16);
+
+            printNode(ref node);
 
             if (parityToBust(ref node) != 1)
                 return -1;
 
-            searchLength = 2 - zeroPos(ref node) % 2;
-
+            searchLength = 2 - (zeroPos(ref node) % 2);
             do
             {
                 searchManhattan(node, zeroPos(ref node), -1, searchLength);
-                winParent.SearchDepthText.Text = MainWindow.SEARCH_DEPTH_STRING + "\r" + searchLength;
-                searchLength += 2;
+                winParent.SearchDepthText.Text = MainWindow.SEARCH_DEPTH_STRING + "\r" + (searchLength);
+                searchLength += 1;
             } while (solutionFound==0 && abortIDA==0);
-            return searchLength - 2;
+
+            return searchLength-1;
         }
 
         private void searchManhattan(int[] node, int zeropos, int ldir, int nextSearch)
         {
             if (solutionFound == 1 || abortIDA == 1)
-            {
                 return;
-            }
-
-            //print((zeropos+1) + " " + ldir + " " + searchLength + " " + nextSearch + " " + nodecount + "\r");
-            //printNode(ref node);
 
             if (nextSearch == 0)
             {
                 solution[nextSearch] = zeropos;
-                winParent.DoEvents();
 
                 if (solution[84] == 0)
                 {
@@ -181,11 +198,11 @@ namespace _15puzzleWPF
                     if (solution[84] < searchLength)
                     {
                         //found solution
-                        printSolution(ref pz);
                         solutionFound = 1;
-                        return; 
+                        return;
                     }
                     printSolution(ref pz);
+                    winParent.DoEvents();
                 }
             }
             else
@@ -203,22 +220,24 @@ namespace _15puzzleWPF
                         byte manDist = 0;
                         for (byte i = 0; i < 16; ++i)
                         {
-                            if (i != newZeroPos)
-                                manDist += manhattanDistance[node[i]-1, i];
+                            if (i != newZeroPos || node[i] != 0)
+                            {
+                                manDist += manhattanDistance[node[i] - 1, i];
+                            }
                         }
 
                         //printNode(ref node);
                         //print("m = " + manDist + " | n = " + nextSearch + "\r");
+                        //winParent.DoEvents();
 
                         if (manDist < nextSearch)
                         {
-                            ++nodecount;
-                            if (nodecount % 500000 == 0)
-                            {
-                                winParent.DistanceText.Text = MainWindow.MANHATTAN_DISTANCE_STRING + "\r" + manDist;
-                                winParent.NodesText.Text = MainWindow.GENERATED_NODES_STRING + "\r" + nodecount;
+                            //print("m = " + manDist + " | n = " + nextSearch + "\r");
+                            //winParent.DoEvents();
+                            if (nodecount % 100000 == 0)
                                 winParent.DoEvents();
-                            }
+
+                            ++nodecount;
                             solution[nextSearch] = zeropos;
                             searchManhattan(node, newZeroPos, dir, nextSearch - 1);
                         }
@@ -241,12 +260,13 @@ namespace _15puzzleWPF
             print("\r");
         }
 
-        private bool checkNode(ref int[] node)
+        private byte checkNode(ref int[] node)
         {
+            byte x = 0;
             for (int i = 0; i < 16; ++i)
                 if (node[i] != final[i])
-                    return false;
-            return true;
+                    x++;
+            return x;
         }
 
         private int parityToBust(ref int[] puz)
@@ -266,7 +286,25 @@ namespace _15puzzleWPF
                     if (tmp[j] == 0) continue;
                     if (tmp[i] > tmp[j])
                     {
-                        mix++;
+                        ++mix;
+                    }
+                }
+            }
+            return mix % 2;
+        }
+
+        private int parity(ref int[] puz)
+        {
+            int mix = 0;
+            for (int i = 0; i < 15; ++i)
+            {
+                if (puz[i] == 0) continue;
+                for (int j = i + 1; j < 16; ++j)
+                {
+                    if (puz[j] == 0) continue;
+                    if (puz[i] > puz[j])
+                    {
+                        ++mix;
                     }
                 }
             }
