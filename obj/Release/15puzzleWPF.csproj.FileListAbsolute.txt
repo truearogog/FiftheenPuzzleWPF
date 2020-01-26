@@ -1,0 +1,15 @@
+H:\My programs\C#\15puzzleWPF\bin\Release\15puzzleWPF.exe.config
+H:\My programs\C#\15puzzleWPF\bin\Release\15puzzleWPF.exe
+H:\My programs\C#\15puzzleWPF\bin\Release\15puzzleWPF.pdb
+H:\My programs\C#\15puzzleWPF\obj\Release\15puzzleWPF.csprojAssemblyReference.cache
+H:\My programs\C#\15puzzleWPF\obj\Release\MainWindow.g.cs
+H:\My programs\C#\15puzzleWPF\obj\Release\App.g.cs
+H:\My programs\C#\15puzzleWPF\obj\Release\15puzzleWPF_MarkupCompile.cache
+H:\My programs\C#\15puzzleWPF\obj\Release\15puzzleWPF_MarkupCompile.lref
+H:\My programs\C#\15puzzleWPF\obj\Release\MainWindow.baml
+H:\My programs\C#\15puzzleWPF\obj\Release\15puzzleWPF.g.resources
+H:\My programs\C#\15puzzleWPF\obj\Release\_15puzzleWPF.Properties.Resources.resources
+H:\My programs\C#\15puzzleWPF\obj\Release\15puzzleWPF.csproj.GenerateResource.cache
+H:\My programs\C#\15puzzleWPF\obj\Release\15puzzleWPF.csproj.CoreCompileInputs.cache
+H:\My programs\C#\15puzzleWPF\obj\Release\15puzzleWPF.exe
+H:\My programs\C#\15puzzleWPF\obj\Release\15puzzleWPF.pdb

@@ -111,8 +111,8 @@ namespace _15puzzleWPF
         {
             Random rand = new Random();
 
-            do
-            {
+            //do
+            //{
                 for (int i = 0; i < 16; ++i)
                 {
                     pz[i] = i;
@@ -121,16 +121,21 @@ namespace _15puzzleWPF
                 {
                     swap<int>(ref pz[i - 1], ref pz[rand.Next(i)]);
                 }
-            } while (parityToBust(ref pz) != 1);
+            //} while (parityToBust(ref pz) != 1);
         }
 
         private void startPos()
         {
+            /*
             for (byte i = 1; i <= 15; ++i)
             {
                 pz[i - 1] = i;
             }
             pz[15] = 0;
+            */
+
+            for (byte i = 0; i < 16; ++i)
+                pz[i] = i;
         }
 
         private void printSolution(ref int[] puz)
@@ -162,7 +167,7 @@ namespace _15puzzleWPF
 
             printNode(ref node);
 
-            if (parityToBust(ref node) != 1)
+            if (parityToBust(ref node) != 0)
                 return -1;
 
             searchLength = 2 - (zeroPos(ref node) % 2);
@@ -222,13 +227,16 @@ namespace _15puzzleWPF
                         {
                             if (i != newZeroPos || node[i] != 0)
                             {
-                                manDist += manhattanDistance[node[i] - 1, i];
+                                manDist += manhattanDistance[node[i], i];
                             }
                         }
 
-                        //printNode(ref node);
-                        //print("m = " + manDist + " | n = " + nextSearch + "\r");
-                        //winParent.DoEvents();
+                        /*
+                        print(nextSearch + " | " + dir + " | " + ldir + " | ");
+                        printNode(ref node);
+                        print("m = " + manDist + " | n = " + nextSearch + "\r");
+                        winParent.DoEvents();
+                        */
 
                         if (manDist < nextSearch)
                         {
