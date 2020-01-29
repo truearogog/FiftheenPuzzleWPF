@@ -15,8 +15,8 @@ namespace _15puzzleWPF
         public const double TILE_OFFSET = 5;
         public const string SEARCH_DEPTH_STRING = "Search depth: ";
         public const string MANHATTAN_DISTANCE_STRING = "Manhattan distance: ";
-        public const string GENERATED_NODES_STRING = "Generated nodes:";
-        public const string TIME_STRING = "Elapsed time:";
+        public const string GENERATED_NODES_STRING = "Generated nodes: ";
+        public const string TIME_STRING = "Elapsed time: ";
         public const byte CONSOLE_LENGTH = 136;
         public const byte AnimationSpeed = 7;
         public bool movingTile = false;
@@ -50,6 +50,11 @@ namespace _15puzzleWPF
             ChangeTilesPositions();
         }
 
+        public void SetNodeCount()
+        {
+            NodesText.Text = GENERATED_NODES_STRING + "\r" + puz.nodecount;
+        }
+
         public void DoEvents()
         {
             Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new EmptyDelegate(delegate { }));
@@ -64,6 +69,7 @@ namespace _15puzzleWPF
                 Canvas.SetLeft(tiles[puz[i]-1], (TILE_SIZE + TILE_OFFSET) * (i % 4) + TILE_OFFSET/2);
                 Canvas.SetTop(tiles[puz[i]-1],  (TILE_SIZE + TILE_OFFSET) * (i / 4) + TILE_OFFSET/2);
             }
+            DistanceText.Text = MANHATTAN_DISTANCE_STRING + "\r" + puz.GetManhattanDist();
         }
 
         public void Print(string message)
@@ -175,6 +181,7 @@ namespace _15puzzleWPF
                 DoEvents();
                 Thread.Sleep(20);
             }
+            DistanceText.Text = MANHATTAN_DISTANCE_STRING + "\r" + puz.GetManhattanDist();
         }
 
         private void AnimateButton_Clicked(object sender, RoutedEventArgs e)
@@ -224,5 +231,5 @@ namespace _15puzzleWPF
             }
             movingTile = false;
         }
-    } 
+    }
 }

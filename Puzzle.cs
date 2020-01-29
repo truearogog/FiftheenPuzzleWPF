@@ -27,7 +27,7 @@ namespace _15puzzleWPF
         public byte abortIDA = 0;
         private byte solutionFound = 0;
         public int searchLength = 0;
-        public Int64 nodecount;
+        public UInt64 nodecount;
 
         private int[] pz = new int[16];
         public int[] solution = new int[85];
@@ -74,6 +74,19 @@ namespace _15puzzleWPF
                     manhattanDistance[i, j] = (byte)(Math.Abs(i / 4 - j / 4) + Math.Abs(i % 4 - j % 4));
                 }
             }
+        }
+
+        public byte GetManhattanDist()
+        {
+            byte manDist = 0;
+            for (byte i = 0; i < 16; ++i)
+            {
+                if (i != zeroPos() && pz[i] != 0)
+                {
+                    manDist += manhattanDistance[pz[i], i];
+                }
+            }
+            return manDist;
         }
 
         public int this[int index]
@@ -225,7 +238,7 @@ namespace _15puzzleWPF
                         byte manDist = 0;
                         for (byte i = 0; i < 16; ++i)
                         {
-                            if (i != newZeroPos || node[i] != 0)
+                            if (i != newZeroPos && node[i] != 0)
                             {
                                 manDist += manhattanDistance[node[i], i];
                             }
@@ -242,8 +255,12 @@ namespace _15puzzleWPF
                         {
                             //print("m = " + manDist + " | n = " + nextSearch + "\r");
                             //winParent.DoEvents();
-                            if (nodecount % 100000 == 0)
+                            if (nodecount % 1000000 == 0)
+                            {
+                                winParent.SetNodeCount();
                                 winParent.DoEvents();
+                            }
+                                
 
                             ++nodecount;
                             solution[nextSearch] = zeropos;
