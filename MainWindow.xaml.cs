@@ -179,7 +179,7 @@ namespace _15puzzleWPF
             {
                 MoveTile(num-1, dir, am);
                 DoEvents();
-                Thread.Sleep(20);
+                Thread.Sleep(10);
             }
             DistanceText.Text = MANHATTAN_DISTANCE_STRING + "\r" + puz.GetManhattanDist();
         }
